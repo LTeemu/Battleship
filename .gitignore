@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules/
 .expo/
 npm-debug.*
@@ -11,3 +12,23 @@ web-build/
 
 # macOS
 .DS_Store
+=======
+# Build and Release Folders
+bin-debug/
+bin-release/
+[Oo]bj/
+[Bb]in/
+
+# Other files and folders
+.settings/
+
+# Executables
+*.swf
+*.air
+*.ipa
+*.apk
+
+# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
+# should NOT be excluded as they contain compiler settings and other important
+# information for Eclipse / Flash Builder.
+>>>>>>> 942211c92f4b95dd77a9fbdd0da1bd78957cc767
