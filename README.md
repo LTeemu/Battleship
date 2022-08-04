@@ -1,4 +1,4 @@
-# Battleship
+# Battleship - September 2021
 Oamk exercise
 
 ![bs1-min](https://user-images.githubusercontent.com/74067579/172830736-3ef12827-289f-4092-b2fe-77f04a788b2e.jpg)
