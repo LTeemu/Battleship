@@ -1,0 +1,121 @@
+import { View, Text, Button, TouchableOpacity, FlatList } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import Entypo from "@expo/vector-icons/Entypo"
+import styles from '../style/style'
+
+const Gameboard = () => {
+const PLUS = <Entypo name='plus' color='blue' size={40} />
+const CROSS = <Entypo name='cross' color='red' size={40} />
+const CIRCLE = <Entypo name='circle' color='green' size={40} />
+
+let shipCount = 3
+let timeLimit = 30
+let bombCount = 15
+let defaultStatus = "Game has not started"
+let initialBoard = Array(25).fill(PLUS)
+
+const [board, setBoard] = useState(initialBoard);
+const [ships, setShips] = useState();
+const [shipsLeft, setShipsLeft] = useState(shipCount);
+const [bombs, setBombs] = useState(bombCount);
+const [gameOn, setGameOn] = useState(false);
+const [gameEnded, setGameEnded] = useState(false);
+const [status, setStatus] = useState(defaultStatus);
+const [time, setTime] = useState(30);
+const timerRef = useRef();
+
+const randomizeShips = () => {
+    let temp = [];
+    for (let n = 0; n < shipCount; n++) {
+        let random = Math.floor((Math.random() * board.length)) + 0;
+        temp.includes(random) ? n-- : temp.push(random)     
+    }
+    setShips(temp);
+}
+
+const startGame = () => {
+  randomizeShips()
+  setGameOn(true)
+  setStatus('Game is on.')
+  startTimer()
+}
+
+const stopGame = () => {
+  setGameEnded(true)
+  stopTimer()
+  if (shipsLeft === 0 && bombs >= 0 && time > 0) {
+    setStatus('You won, all ships sunk!');
+  }
+  if (bombs === 0 && shipsLeft > 0 && time > 0) {
+    setStatus('You lost, the bombs ran out.');
+  }
+  if (time === 0) {
+    setStatus('You lost, the time ran out.');
+  }
+}
+
+const restartGame = () => {
+  setBoard(initialBoard);
+  setBombs(bombCount);
+  setShipsLeft(shipCount);
+  setShips(randomizeShips);
+  setStatus(defaultStatus)
+  setTime(timeLimit);
+  setGameOn(false);
+  setGameEnded(false)
+}
+
+const startTimer = () => {
+  timerRef.current = setInterval(() => {setTime(time => time-1)}, 1000);      
+}
+
+const stopTimer = () => {
+  clearInterval(timerRef.current);
+}
+
+const checkGuess = (i) => {
+  let guess = board[i]
+  let icon = guess.props.name
+  if(icon === 'plus') {
+    let boardCopy = [...board]
+    if(ships.includes(i)) {
+      setShipsLeft(shipsLeft - 1)      
+      boardCopy[i] = CIRCLE
+    } else {
+      boardCopy[i] = CROSS
+    }
+    setBoard(boardCopy)
+    setBombs(bombs - 1)
+  }
+}
+
+useEffect(() => {
+  if (shipsLeft === 0 || bombs === 0 || time <= 0) {
+    stopGame();
+  }
+}, [shipsLeft, bombs, time]);
+
+  return (
+    <View style={{width: '100%', alignItems: 'center', flex: 1}}>
+      <FlatList
+        data={board}
+        renderItem={({item, index}) => (
+        <TouchableOpacity key={index} onPress={() => !gameOn ? checkGuess(index) : setStatus("Press start to play the game")} disabled={gameEnded || item.props.name !== 'plus'}
+        style={{width: '20%', aspectRatio: '1/1', justifyContent: 'center', alignItems: 'center'}}>     
+          {item}      
+        </TouchableOpacity>
+        )}
+        numColumns={5}
+      />
+      <Text>{status}</Text>
+      <Text>Bombs: {bombs} Ships: {shipsLeft} Time: {time}</Text>
+      <Button 
+        title={gameEnded ? "Restart Game" : "Start Game"} 
+        onPress={gameEnded ? restartGame : startGame} 
+        disabled={gameOn && !gameEnded} 
+      />
+    </View>
+  );
+};
+
+export default Gameboard;
